@@ -1,0 +1,69 @@
+body {
+  background-color: #f0f2f5; /* Çok hafif gri arka plan */
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Yumuşak gölge */
+  text-align: center;
+}
+
+.brand-logo {
+  color: #13C5DD;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.brand-subtitle {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.form-control {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+  .form-control:focus {
+    border-color: #13C5DD; 
+    box-shadow: 0 0 0 0.2rem rgba(19, 197, 221, 0.25); 
+  }
+
+.btn-medinova {
+  background-color: #13C5DD; 
+  border: none;
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: all 0.3s;
+}
+
+  .btn-medinova:hover {
+    background-color: #0faec5; 
+    color: white;
+  }
+
+.text-danger {
+  font-size: 12px;
+  text-align: left;
+  display: block;
+  margin-bottom: 10px;
+}

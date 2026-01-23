@@ -1,0 +1,100 @@
+@model List<Medinova.DTOs.ResultHeroDto>
+
+@{
+    ViewBag.Title = "Slider Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-3xl">view_carousel</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Slider & Banner</h1>
+                <p class="text-slate-500 text-sm font-medium">Ana sayfadaki kayan görselleri yönetin.</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="@Url.Action("Create", "AdminHero")" class="relative group overflow-hidden px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-cyan-500 text-white font-bold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 transform hover:-translate-y-0.5">
+                <span class="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 origin-left"></span>
+                <div class="relative flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_photo_alternate</span>
+                    <span>Yeni Slider Ekle</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-100">
+                        <th class="px-6 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest w-1/4">Başlık</th>
+                        <th class="px-6 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Açıklama</th>
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-40">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="group hover:bg-cyan-50/40 transition-all duration-300">
+                                
+                                <td class="px-6 py-6 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="text-base font-bold text-slate-700 group-hover:text-primary transition-colors mb-1">
+                                            @item.Title
+                                        </span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wide w-fit">
+                                            ID: #@item.HeroID
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-6 align-top">
+                                    <p class="text-sm text-slate-500 leading-relaxed font-medium whitespace-normal break-words text-justify pr-4">
+                                        @(string.IsNullOrEmpty(item.Description) ? "Açıklama girilmemiş." : item.Description)
+                                    </p>
+                                </td>
+
+                                <td class="px-8 py-6 align-top text-right">
+                                    <div class="flex items-center justify-end gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                                        <a href="@Url.Action("Update", "AdminHero", new { id = item.HeroID })"
+                                           class="h-10 w-10 rounded-xl bg-white border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary shadow-sm hover:shadow-primary/30 transition-all duration-200" title="Düzenle">
+                                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
+                                        </a>
+
+                                        <a href="javascript:void(0);"
+                                           data-url="@Url.Action("Delete", "AdminHero", new { id = item.HeroID })"
+                                           class="btn-sil h-10 w-10 rounded-xl bg-white border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 shadow-sm hover:shadow-red-500/30 transition-all duration-200" title="Sil">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="px-6 py-16 text-center bg-slate-50/30">
+                                <div class="flex flex-col items-center justify-center gap-4">
+                                    <div class="h-20 w-20 bg-white rounded-full shadow-lg flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-5xl text-gray-300">burst_mode</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-slate-700">Slider Boş</h3>
+                                    <p class="text-slate-400 text-sm">Ana sayfada gösterilecek bir banner bulunamadı.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

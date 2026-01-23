@@ -1,4 +1,4 @@
-@model Medinova.DTOs.LoginDto
+@model Medinova.DTOs.AccountDtos.LoginDto
 @{
     Layout = null;
 }
@@ -148,9 +148,9 @@
                 <label class="form-label">Kullanıcı Adı</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa fa-user"></i></span>
-                    @Html.TextBoxFor(x => x.UserName, new { @class = "form-control border-start-0", placeholder = "Örn: admin" })
+                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control border-start-0", placeholder = "Örn: admin" })
                 </div>
-                @Html.ValidationMessageFor(x => x.UserName, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
             </div>
 
             <div class="mb-4">

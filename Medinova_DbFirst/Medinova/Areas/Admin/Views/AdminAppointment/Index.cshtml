@@ -1,0 +1,117 @@
+@model List<Medinova.DTOs.AppointmentDtos.ResultAppointmentDto>
+
+@{
+    ViewBag.Title = "Randevu Listesi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-3xl">calendar_month</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Randevu Talepleri</h1>
+                <p class="text-slate-500 text-sm font-medium">Web sitesinden alınan randevuların listesi.</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-100">
+                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                <span class="text-xs font-bold text-slate-500">Toplam: @(Model != null ? Model.Count : 0)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-100">
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest w-20">Durum</th>
+                        <th class="px-6 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Hasta Bilgileri</th>
+                        <th class="px-6 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Doktor & Bölüm</th>
+                        <th class="px-6 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Tarih & Saat</th>
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-32">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="group hover:bg-cyan-50/40 transition-all duration-300">
+
+                                <td class="px-8 py-6 align-top">
+                                    @if (item.IsActive)
+                                    {
+                                        <div class="h-10 w-10 rounded-full bg-green-50 flex items-center justify-center text-green-600" title="Onaylı">
+                                            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h-10 w-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500" title="Bekliyor">
+                                            <span class="material-symbols-outlined text-[20px]">hourglass_empty</span>
+                                        </div>
+                                    }
+                                </td>
+
+                                <td class="px-6 py-6 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="text-base font-bold text-slate-700 group-hover:text-primary transition-colors">
+                                            @item.PatientName
+                                        </span>
+                                        <div class="flex items-center gap-1 mt-1 text-slate-400">
+                                            <span class="material-symbols-outlined text-[14px]">phone</span>
+                                            <span class="text-xs font-semibold">@item.PatientPhone</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-6 align-top">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-sm font-bold text-slate-600">@item.DoctorName</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide w-fit">
+                                            @item.DepartmentName
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-6 align-top">
+                                    <div class="flex flex-col gap-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-[18px]">event</span>
+                                            <span class="text-sm font-bold text-slate-700">@item.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-[18px]">schedule</span>
+                                            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">@item.AppointmentTime</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-8 py-6 align-top text-right">
+                                    <a href="javascript:void(0);"
+                                       data-url="@Url.Action("Delete", "AdminAppointment", new { id = item.AppointmentID })"
+                                       class="btn-sil inline-flex items-center justify-center h-10 w-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:bg-red-500 hover:text-white hover:border-red-500 shadow-sm hover:shadow-red-500/30 transition-all duration-200"
+                                       title="Randevuyu İptal Et / Sil">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="px-6 py-16 text-center text-slate-400 font-medium">Henüz randevu talebi bulunmuyor.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-namespace Medinova.DTOs
+namespace Medinova.DTOs.DoctorDtos
 {
     public class ResultDoctorDto
     {

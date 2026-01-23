@@ -36,5 +36,7 @@ namespace Medinova.Models
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<Package> Packages { get; set; }
         public virtual DbSet<Testimonial> Testimonials { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<WebSiteSetting> WebSiteSettings { get; set; }
     }
 }

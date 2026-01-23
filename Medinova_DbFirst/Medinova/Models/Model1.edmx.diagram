@@ -19,6 +19,9 @@
         <EntityTypeShape EntityType="MedinovaDbModel.Service" Width="1.5" PointX="10" PointY="0.875" />
         <EntityTypeShape EntityType="MedinovaDbModel.Package" Width="1.5" PointX="0.75" PointY="7.75" />
         <EntityTypeShape EntityType="MedinovaDbModel.Testimonial" Width="1.5" PointX="3.375" PointY="7.75" />
+        <EntityTypeShape EntityType="MedinovaDbModel.Role" Width="1.5" PointX="10" PointY="4.125" />
+        <AssociationConnector Association="MedinovaDbModel.UserRoles" />
+        <EntityTypeShape EntityType="MedinovaDbModel.WebSiteSetting" Width="1.5" PointX="5.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

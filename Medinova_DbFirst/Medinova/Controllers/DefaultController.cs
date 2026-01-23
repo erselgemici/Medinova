@@ -100,15 +100,28 @@ namespace Medinova.Controllers
         public PartialViewResult DefaultHero()
         {
             var values = _context.Heroes.FirstOrDefault();
-            return PartialView(values);
+            var dto = new ResultHeroDto
+            {
+                HeroID = values.HeroID,
+                Title = values.Title,
+                Description = values.Description
+            };
+            return PartialView(dto);
         }
 
         public PartialViewResult DefaultAbout()
         {
             var aboutData = _context.Abouts.FirstOrDefault();
-            var items = _context.AboutItems.ToList();
+            var items = _context.AboutItems.ToList();           
             ViewBag.Items = items;
-            return PartialView(aboutData);
+            var dto = new ResultAboutDto
+            {
+                AboutID = aboutData.AboutId,
+                Title = aboutData.Title,
+                Description = aboutData.Description,
+                ImageUrl = aboutData.ImageUrl
+            };
+            return PartialView(dto);
         }
 
         public PartialViewResult DefaultServices()

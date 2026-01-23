@@ -8,5 +8,6 @@ namespace Medinova.DTOs.DepartmentDtos
 
         [Required(ErrorMessage = "Bölüm adı boş geçilemez.")]
         public string Name { get; set; }
+
     }
 }

@@ -7,16 +7,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Medinova.Controllers
+namespace Medinova.Areas.Admin.Controllers
 {
-    public class AdminDoctorController : Controller
+    public class AdminDoctorController : AdminBaseController
     {
         DoctorRepository repo = new DoctorRepository();
 
         private async Task LoadDepartmentsDropdownAsync()
         {
             GenericRepository<Department> depRepo = new GenericRepository<Department>();
-
             var departments = await depRepo.GetAllAsync();
 
             ViewBag.Departments = departments.Select(x => new SelectListItem
@@ -35,25 +34,25 @@ namespace Medinova.Controllers
                 DoctorID = x.DoctorId,
                 FullName = x.FullName,
                 ImageUrl = x.ImageUrl,
-                DepartmentName = x.Department != null ? x.Department.Name : ""
+                DepartmentName = x.Department != null ? x.Department.Name : "Bölüm Yok"
             }).ToList();
 
             return View(doctorDtos);
         }
 
         [HttpGet]
-        public async Task<ActionResult> CreateDoctor()
+        public async Task<ActionResult> Create() 
         {
             await LoadDepartmentsDropdownAsync();
-
             return View();
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateDoctor(CreateDoctorDto doctorDto)
+        public async Task<ActionResult> Create(CreateDoctorDto doctorDto)
         {
             if (!ModelState.IsValid)
             {
+                await LoadDepartmentsDropdownAsync(); 
                 return View(doctorDto);
             }
 
@@ -68,24 +67,23 @@ namespace Medinova.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> DeleteDoctor(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             await repo.DeleteAsync(id);
-
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public async Task<ActionResult> UpdateDoctor(int id)
+        public async Task<ActionResult> Update(int id) 
         {
-            await LoadDepartmentsDropdownAsync();
-
             var value = await repo.GetByIdAsync(id);
 
             if (value == null)
             {
                 return RedirectToAction("Index");
             }
+
+            await LoadDepartmentsDropdownAsync();
 
             UpdateDoctorDto model = new UpdateDoctorDto
             {
@@ -100,7 +98,7 @@ namespace Medinova.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UpdateDoctor(UpdateDoctorDto doctorDto)
+        public async Task<ActionResult> Update(UpdateDoctorDto doctorDto)
         {
             if (!ModelState.IsValid)
             {
@@ -109,7 +107,6 @@ namespace Medinova.Controllers
             }
 
             Doctor doctor = new Doctor();
-
             doctor.DoctorId = doctorDto.DoctorId;
             doctor.FullName = doctorDto.FullName;
             doctor.Description = doctorDto.Description;

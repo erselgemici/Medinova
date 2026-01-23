@@ -1,0 +1,110 @@
+@model Medinova.DTOs.SettingsDtos.UpdateSettingsDto
+@{
+    ViewBag.Title = "Ayarları Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-6">
+
+    <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+        <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+            <span class="material-symbols-outlined text-2xl">tune</span>
+        </div>
+        <div>
+            <h2 class="text-xl font-bold text-secondary">Site Yapılandırması</h2>
+            <p class="text-xs text-gray-400">Tüm iletişim kanallarını ve bağlantıları buradan yönetin.</p>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Update", "AdminSettings", FormMethod.Post))
+    {
+        @Html.HiddenFor(x => x.SettingID)
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+            <div class="space-y-6">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 mb-4">İletişim</h3>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-700 ml-1">Telefon Numarası</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">call</span>
+                        @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm" })
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-700 ml-1">E-Posta Adresi</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">mail</span>
+                        @Html.TextBoxFor(x => x.Email, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm" })
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-700 ml-1">Açık Adres</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-4 text-gray-400 material-symbols-outlined text-[20px]">location_on</span>
+                        @Html.TextAreaFor(x => x.Address, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 h-24 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none text-sm" })
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-700 ml-1">Google Maps (Iframe URL)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">map</span>
+                        @Html.TextBoxFor(x => x.MapUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 mb-4">Sosyal Medya & Site</h3>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-700 ml-1">Logo URL</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">image</span>
+                        @Html.TextBoxFor(x => x.LogoUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm" })
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Twitter (X)</label>
+                        @Html.TextBoxFor(x => x.TwitterUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 px-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm", placeholder = "https://x.com/..." })
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Facebook</label>
+                        @Html.TextBoxFor(x => x.FacebookUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 px-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm", placeholder = "https://facebook.com/..." })
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Instagram</label>
+                        @Html.TextBoxFor(x => x.InstagramUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 px-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm", placeholder = "https://instagram.com/..." })
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Linkedin</label>
+                        @Html.TextBoxFor(x => x.LinkedinUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 px-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm", placeholder = "https://linkedin.com/..." })
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2 mt-4">
+                    <label class="text-xs font-bold text-slate-700 ml-1">Footer Açıklaması</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-4 text-gray-400 material-symbols-outlined text-[20px]">description</span>
+                        @Html.TextAreaFor(x => x.FooterDescription, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 h-24 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none text-sm" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+            <a href="/Admin/AdminSettings/Index" class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 hover:text-gray-800 transition-colors text-sm">Vazgeç</a>
+            <button type="submit" class="px-8 py-2.5 rounded-lg bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 flex items-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-sm">save_as</span>
+                Tüm Ayarları Kaydet
+            </button>
+        </div>
+    }
+</div>

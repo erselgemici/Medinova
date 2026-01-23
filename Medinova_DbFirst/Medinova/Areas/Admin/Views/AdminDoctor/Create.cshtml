@@ -1,0 +1,73 @@
+@model Medinova.DTOs.DoctorDtos.CreateDoctorDto
+@{
+    ViewBag.Title = "Yeni Doktor Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-6">
+
+    <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+        <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-xl">person_add</span>
+        </div>
+        <div>
+            <h2 class="text-lg font-bold text-secondary">Yeni Doktor Oluştur</h2>
+            <p class="text-xs text-gray-400">Hastaneye yeni bir uzman hekim kaydı ekleyin.</p>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Create", "AdminDoctor", FormMethod.Post))
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold text-gray-700 ml-1 uppercase tracking-wide">Ad Soyad & Unvan</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">id_card</span>
+                    @Html.TextBoxFor(x => x.FullName, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm", placeholder = "Örn: Prof. Dr. Ahmet Yılmaz" })
+                </div>
+                @Html.ValidationMessageFor(x => x.FullName, "", new { @class = "text-red-500 text-xs font-medium ml-1" })
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold text-gray-700 ml-1 uppercase tracking-wide">Uzmanlık Alanı</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">ward</span>
+                    @Html.DropDownListFor(x => x.DepartmentId, (List<SelectListItem>)ViewBag.Departments, "--- Bölüm Seçiniz ---", new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm appearance-none cursor-pointer" })
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px] pointer-events-none">arrow_drop_down</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2 md:col-span-2">
+                <label class="text-xs font-bold text-gray-700 ml-1 uppercase tracking-wide">Profil Fotoğrafı (URL)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">image</span>
+                    @Html.TextBoxFor(x => x.ImageUrl, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm", placeholder = "/Content/img/doctors/dr-ahmet.jpg" })
+                </div>
+                <p class="text-[10px] text-gray-400 ml-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">info</span>
+                    Şimdilik resim yolunu manuel giriyoruz, dosya yükleme daha sonra eklenecek.
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-2 md:col-span-2">
+                <label class="text-xs font-bold text-gray-700 ml-1 uppercase tracking-wide">Hekim Biyografisi</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-4 text-gray-400 material-symbols-outlined text-[20px]">history_edu</span>
+                    @Html.TextAreaFor(x => x.Description, new { @class = "w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-10 pr-4 h-32 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none text-sm", placeholder = "Doktor hakkında kısa özgeçmiş ve uzmanlık detayları..." })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+            <a href="/Admin/AdminDoctor/Index" class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 hover:text-gray-800 transition-colors text-sm">
+                Vazgeç
+            </a>
+            <button type="submit" class="px-8 py-2.5 rounded-lg bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 flex items-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-sm">save</span>
+                Kaydet
+            </button>
+        </div>
+    }
+</div>

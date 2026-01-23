@@ -1,4 +1,4 @@
-using Medinova.DTOs;
+using Medinova.DTOs.AccountDtos;
 using Medinova.Models;
 using System.Linq;
 using System.Web.Mvc;
@@ -19,15 +19,15 @@ namespace Medinova.Controllers
         [HttpPost]
         public ActionResult Login(LoginDto model)
         {
-            var user = context.Users.FirstOrDefault(x=>x.UserName == model.UserName && x.Password == model.Password);
+            var user = context.Users.FirstOrDefault(x=>x.Email == model.Email && x.Password == model.Password);
             if (user == null)
             {
                 ModelState.AddModelError("","Kullanıcı adı veya şifre hatalı");
                 return View(model);
             }
 
-            FormsAuthentication.SetAuthCookie(user.UserName,false);
-            Session["userName"] = user.UserName;
+            FormsAuthentication.SetAuthCookie(user.Email,false);
+            Session["eMail"] = user.Email;
             Session["fullName"] = user.FirstName + " " + user.LastName;
 
             return RedirectToAction("Index","AdminDoctor");

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr" class="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medinova Admin Panel</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13b6ec", /* Medinova Mavisi */
+                        "secondary": "#0d181b",
+                        "sidebar-navy": "#101d22",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101d22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).on('click', '.btn-sil', function (e) {
+            e.preventDefault();
+            var silinecekUrl = $(this).data('url');
+
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu kaydı sildiğinizde geri alamazsınız!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = silinecekUrl;
+                }
+            })
+        });
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .nav-link.active {
+            background-color: #13b6ec;
+            color: white !important;
+        }
+
+            .nav-link.active span {
+                color: white !important;
+            }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-secondary selection:bg-primary/30">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <aside class="w-64 flex-shrink-0 bg-sidebar-navy text-white flex flex-col justify-between py-6">
+            <div class="flex flex-col gap-8">
+                <div class="px-6 flex items-center gap-3">
+                    <div class="bg-primary p-2 rounded-lg">
+                        <span class="material-symbols-outlined text-white text-2xl">local_hospital</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-white text-lg font-bold leading-none tracking-tight">Medinova</h1>
+                        <p class="text-gray-400 text-xs font-medium">Yönetim Paneli</p>
+                    </div>
+                </div>
+
+                <nav class="flex flex-col gap-1 px-3">
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-medium">Özet (Dashboard)</span>
+                    </a>
+
+                    <div class="my-2 border-t border-white/10 mx-4"></div>
+                    <span class="px-4 text-[10px] text-gray-500 uppercase font-bold tracking-wider">Site İçeriği</span>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminHero", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">view_carousel</span>
+                        <span class="text-sm font-medium">Slider / Hero</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminAbout", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">info</span>
+                        <span class="text-sm font-medium">Hakkımızda</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminService", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">medical_services</span>
+                        <span class="text-sm font-medium">Hizmetler</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminPackage", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">inventory_2</span> <span class="text-sm font-medium">Paketler</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminTestimonial", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">reviews</span>
+                        <span class="text-sm font-medium">Referanslar</span>
+                    </a>
+
+                    <div class="my-2 border-t border-white/10 mx-4"></div>
+                    <span class="px-4 text-[10px] text-gray-500 uppercase font-bold tracking-wider">Hastane Yönetimi</span>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminDepartment", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">ward</span>
+                        <span class="text-sm font-medium">Bölümler</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminDoctor", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">stethoscope</span>
+                        <span class="text-sm font-medium">Doktorlar</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminAppointment", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="text-sm font-medium">Randevular</span>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white nav-link"
+                       href="@Url.Action("Index", "AdminSettings", new { area = "Admin" })">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="text-sm font-medium">Ayarlar</span>
+                    </a>
+                </nav>
+
+            <div class="px-3">
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/20 transition-colors text-gray-400 hover:text-red-500"
+                   href="@Url.Action("Logout", "Login", new { area = "Admin" })">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="text-sm font-medium">Güvenli Çıkış</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 flex items-center justify-between px-8 bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+                <div class="flex-1 max-w-md">
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Ara..." type="text" />
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <button class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div class="h-8 w-[1px] bg-gray-200"></div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col items-end">
+                            <span class="text-sm font-bold text-secondary">
+                                @(Session["AdminName"] != null ? Session["AdminName"] : "Yönetici")
+                            </span>
+                            <span class="text-[10px] text-gray-500 font-medium tracking-wide uppercase">Admin</span>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                            A
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 space-y-8 bg-background-light">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+</body>
+</html>

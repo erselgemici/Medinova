@@ -7,5 +7,6 @@ namespace Medinova.DTOs.DepartmentDtos
         [Required(ErrorMessage = "Bölüm adı boş geçilemez.")]
         [StringLength(50, ErrorMessage = "Bölüm adı en fazla 50 karakter olabilir.")]
         public string Name { get; set; }
+
     }
 }

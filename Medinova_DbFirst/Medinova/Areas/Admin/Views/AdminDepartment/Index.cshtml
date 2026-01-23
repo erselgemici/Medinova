@@ -1,0 +1,124 @@
+@model List<Medinova.Models.Department>
+
+@{
+    ViewBag.Title = "Bölümler";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-xl bg-cyan-50 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-3xl">ward</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Poliklinik Yönetimi</h1>
+                <p class="text-slate-500 text-sm font-medium">Hastaneye ait tıbbi birimlerin listesi.</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="relative hidden md:block group">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary material-symbols-outlined text-[20px] transition-colors">search</span>
+                <input type="text" placeholder="Bölüm ara..." class="pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-600 focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all w-64 placeholder:text-gray-400">
+            </div>
+
+            <a href="@Url.Action("Create", "AdminDepartment")" class="relative group overflow-hidden px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-cyan-500 text-white font-bold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 transform hover:-translate-y-0.5">
+                <span class="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 origin-left"></span>
+                <div class="relative flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>Yeni Bölüm</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-100">
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest w-24">ID</th>
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Bölüm Bilgisi</th>
+                        <th class="px-8 py-5 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Yönetim</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="group hover:bg-cyan-50/40 transition-all duration-300">
+                                <td class="px-8 py-5">
+                                    <span class="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-slate-100 text-slate-500 text-xs font-bold font-mono group-hover:bg-white group-hover:shadow-sm transition-all">
+                                        #@item.DepartmentId
+                                    </span>
+                                </td>
+
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="h-14 w-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300 transform group-hover:scale-110">
+                                            <span class="material-symbols-outlined text-3xl">ward</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-lg font-bold text-slate-700 group-hover:text-primary transition-colors">
+                                                @item.Name
+                                            </span>
+                                            <span class="text-xs text-slate-400 font-medium">Aktif Poliklinik</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex items-center justify-end gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
+
+                                        <a href="@Url.Action("Update", "AdminDepartment", new { id = item.DepartmentId })"
+                                           class="h-10 w-10 rounded-xl bg-white border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary shadow-sm hover:shadow-primary/30 transition-all duration-200"
+                                           title="Düzenle">
+                                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
+                                        </a>
+
+                                        <a href="javascript:void(0);"
+                                           data-url="@Url.Action("Delete", "AdminDepartment", new { id = item.DepartmentId })"
+                                           class="btn-sil h-10 w-10 rounded-xl bg-white border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 shadow-sm hover:shadow-red-500/30 transition-all duration-200"
+                                           title="Sil">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="px-6 py-16 text-center bg-slate-50/30">
+                                <div class="flex flex-col items-center justify-center gap-4">
+                                    <div class="h-20 w-20 bg-white rounded-full shadow-lg flex items-center justify-center animate-pulse">
+                                        <span class="material-symbols-outlined text-5xl text-gray-300">folder_off</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <h3 class="text-xl font-bold text-slate-700">Kayıt Bulunamadı</h3>
+                                        <p class="text-slate-400 text-sm">Sistemde henüz tanımlı bir poliklinik/bölüm yok.</p>
+                                    </div>
+                                    <a href="@Url.Action("Create", "AdminDepartment")" class="mt-4 px-6 py-2 rounded-lg bg-primary/10 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all">
+                                        + İlk Bölümü Oluştur
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="px-8 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Toplam @(Model != null ? Model.Count : 0) Birim</span>
+            <div class="flex gap-1 opacity-50">
+                <span class="h-2 w-2 rounded-full bg-slate-300"></span>
+                <span class="h-2 w-2 rounded-full bg-primary"></span>
+                <span class="h-2 w-2 rounded-full bg-slate-300"></span>
+            </div>
+        </div>
+    </div>
+</div>
