@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container-fluid bg-primary my-5 py-5">
     <div class="container py-5">
@@ -10,7 +11,6 @@
                 <p class="text-white mb-5">
                     Hastanemiz, alanında uzman doktor kadrosu ve son teknoloji tıbbi cihazları ile 7/24 hizmetinizdedir.
                     Sağlığınızı ihmal etmeyin; ister yandaki formu doldurarak, isterseniz çağrı merkezimizi arayarak kolayca randevunuzu planlayabilirsiniz.
-                    Sizlere en iyi sağlık hizmetini sunmak için buradayız.
                 </p>
                 <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="/Doctor/Index/">Doktor Bul</a>
                 <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="/Default/About/">Daha Fazla</a>
@@ -18,8 +18,24 @@
             <div class="col-lg-6">
                 <div class="bg-white text-center rounded p-5">
                     <h1 class="mb-4">Randevu Oluştur</h1>
-                    <form method="post" action="/Default/MakeAppointment">
+
+                    <form method="post" action="/Default/MakeAppointment" id="appointmentForm">
                         <div class="row g-3">
+
+                            <div class="col-12 mb-3">
+                                <div class="p-3 rounded border border-info" style="background-color: #f0f9ff;">
+                                    <label class="text-info font-weight-bold mb-2" style="font-weight: bold; color: #13b6ec;">
+                                        <i class="fa fa-robot"></i> AI Asistan: Şikayetinizi Yazın
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" id="txtComplaint" class="form-control border-0" placeholder="Örn: Başım ağrıyor, midem bulanıyor..." style="height: 45px;">
+                                        <button class="btn btn-info text-white font-weight-bold" type="button" id="btnAskAI" style="background-color: #13b6ec; border:none;">
+                                            Bölüm Öner
+                                        </button>
+                                    </div>
+                                    <small id="aiResult" class="text-success d-block mt-2 font-weight-bold"></small>
+                                </div>
+                            </div>
                             <div class="col-12 col-sm-6">
                                 <label>Bölüm Seçiniz</label>
                                 @Html.DropDownList("DepartmentId", (List<SelectListItem>)ViewBag.departments, "---Bölüm Seçiniz---", new { @class = "form-control" })
@@ -27,21 +43,17 @@
                             <div class="col-12 col-sm-6">
                                 <label>Doktor Seçiniz</label>
                                 <select id="DoctorId" name="DoctorId" class="form-control bg-light border-0" style="height: 55px;">
-                                    <option selected>---Önce Bölümü Seçiniz---</option>
-
+                                    <option selected value="">---Önce Bölümü Seçiniz---</option>
                                 </select>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="text" name="FullName" class="form-control bg-light border-0" placeholder="Adınız Soyadınız"
-                                       style="height: 55px;">
+                                <input type="text" name="FullName" class="form-control bg-light border-0" placeholder="Adınız Soyadınız" style="height: 55px;">
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="email" name="Email" class="form-control bg-light border-0" placeholder="Email Adresiniz"
-                                       style="height: 55px;">
+                                <input type="email" name="Email" class="form-control bg-light border-0" placeholder="Email Adresiniz" style="height: 55px;">
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="text" name="PhoneNumber" class="form-control bg-light border-0" placeholder="Telefon Numaranız"
-                                       style="height: 55px;">
+                                <input type="text" name="PhoneNumber" class="form-control bg-light border-0" placeholder="Telefon Numaranız" style="height: 55px;">
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="date" id="date" data-target-input="nearest">
@@ -51,13 +63,12 @@
                             <div class="col-12 col-sm-6">
                                 <div class="time" id="time" data-target-input="nearest">
                                     <select id="AppointmentTime" name="AppointmentTime" class="form-control bg-light border-0" style="height: 55px;">
-                                        <option selected>---Önce Tarih Seçiniz---</option>
-
+                                        <option selected value="">---Önce Tarih Seçiniz---</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="submit">
+                                <button class="btn btn-primary w-100 py-3" type="button" id="btnSubmit">
                                     Randevu Oluştur
                                 </button>
                             </div>
@@ -69,24 +80,83 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
 
+        // --- GİRİŞ KONTROLÜ İÇİN DEĞİŞKEN (RAZOR İLE) ---
+        var isLoggedIn = '@(Session["UserId"] != null ? "true" : "false")';
+
+        // ==========================================
+        // 0. AI ASİSTAN BUTONU TIKLAMA OLAYI (YENİ)
+        // ==========================================
+        $("#btnAskAI").click(function () {
+            var complaintText = $("#txtComplaint").val();
+            var resultLabel = $("#aiResult");
+            var btn = $(this);
+
+            if (complaintText.trim() === "") {
+                Swal.fire('Eksik Bilgi', 'Lütfen şikayetinizi yazınız.', 'warning');
+                return;
+            }
+
+            // Butonu geçici olarak devre dışı bırak
+            var originalText = btn.text();
+            btn.text('Aranıyor...');
+            btn.prop('disabled', true);
+            resultLabel.text("");
+
+            $.ajax({
+                url: '@Url.Action("GetDepartmentRecommendation", "Default")',
+                type: 'POST',
+                data: { complaint: complaintText },
+                success: function (response) {
+                    if (response.success) {
+                        // 1. Önerilen Bölümü Dropdown'da Seç
+                        $("#DepartmentId").val(response.departmentId).trigger('change');
+
+                        // 2. Kullanıcıya Bilgi Ver
+                        resultLabel.html('<i class="fa fa-check"></i> Önerilen: ' + response.departmentName);
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Bölüm Bulundu!',
+                            text: 'Şikayetinize en uygun bölüm: ' + response.departmentName + '. Doktorlar listelendi.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        resultLabel.text(response.message);
+                        Swal.fire('Sonuç Bulunamadı', response.message, 'info');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Hata', 'Yapay zeka servisine ulaşılamadı.', 'error');
+                },
+                complete: function () {
+                    btn.text(originalText);
+                    btn.prop('disabled', false);
+                }
+            });
+        });
+
+        // 1. DOKTORLARI GETİR (DEPARTMAN DEĞİŞİNCE)
         $("#DepartmentId").change(function () {
-
             var selectedDepId = $(this).val();
-
             var doctorDropdown = $("#DoctorId");
-
             var timeDropdown = $("#AppointmentTime");
-          
+
+            // Tarih ve saatleri sıfırla
             $('#AppointmentDate').val('').trigger('change');
-
             timeDropdown.empty();
+            timeDropdown.append('<option value="">--- Önce Tarihi Seçiniz---</option>');
 
-            timeDropdown.append('<option>--- Önce Tarihi Seçiniz---</option>')
+            if (!selectedDepId) {
+                doctorDropdown.empty();
+                doctorDropdown.append('<option value="">---Önce Bölümü Seçiniz---</option>');
+                return;
+            }
 
             $.ajax({
                 url: '/Default/GetDoctorsByDepartmentId',
@@ -95,27 +165,24 @@
                 dataType: 'json',
                 success: function (data) {
                     doctorDropdown.empty();
+                    doctorDropdown.append('<option value="">Doktor Seçiniz</option>');
                     $.each(data, function (i, doctor) {
-
                         doctorDropdown.append($('<option> </option>').val(doctor.Value).html(doctor.Text));
                     });
                 }
-            })
+            });
+        });
 
-        })
-
-        $("#AppointmentDate").change(function () {
-
-            var selectedDate = $(this).val();
-
+        // 2. SAATLERİ GETİR (TARİH VEYA DOKTOR DEĞİŞİNCE)
+        $("#AppointmentDate, #DoctorId").change(function () {
+            var selectedDate = $("#AppointmentDate").val();
             var selectedDoctorId = $("#DoctorId").val();
-
             var timeDropdown = $("#AppointmentTime");
 
-            
-
-            if (selectedDate === '' && selectedDoctorId === '') {
-                timeDropdown.append('<option>--- Önce Doktoru ve Tarihi Seçiniz---</option>')
+            if (selectedDate === '' || selectedDoctorId === '') {
+                timeDropdown.empty();
+                timeDropdown.append('<option value="">--- Önce Doktoru ve Tarihi Seçiniz---</option>');
+                return;
             }
 
             $.ajax({
@@ -124,11 +191,10 @@
                 dataType: 'json',
                 data: { selectedDate: selectedDate, doctorId: selectedDoctorId },
                 success: function (data) {
-
                     timeDropdown.empty();
+                    timeDropdown.append('<option value="">Saat Seçiniz</option>');
 
                     $.each(data, function (i, item) {
-
                         var isDisabled = false;
                         var optionText = item.Time;
 
@@ -141,19 +207,56 @@
 
                         if (isDisabled) {
                             option.prop('disabled', true);
+                            option.css('color', '#ccc');
                         }
 
                         timeDropdown.append(option);
-                        timeDropdown.prop('disabled', false);
-
                     });
-
                 }
             });
-
         });
 
+        // 3. BUTONA TIKLAYINCA KONTROL ET (SUBMIT)
+        $("#btnSubmit").click(function (e) {
+            e.preventDefault();
+
+            // Kontrol 1: Giriş yapılmış mı?
+            if (isLoggedIn === "false") {
+                Swal.fire({
+                    title: 'Giriş Yapmalısınız',
+                    text: "Randevu oluşturmak için lütfen önce giriş yapınız.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Giriş Yap',
+                    cancelButtonText: 'İptal',
+                    confirmButtonColor: '#13b6ec'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Login/Index";
+                    }
+                });
+                return;
+            }
+
+            // Kontrol 2: Tüm alanlar dolu mu?
+            var department = $("#DepartmentId").val();
+            var doctor = $("#DoctorId").val();
+            var date = $("#AppointmentDate").val();
+            var time = $("#AppointmentTime").val();
+
+            if (!department || !doctor || !date || !time) {
+                Swal.fire({
+                    title: 'Eksik Bilgi',
+                    text: 'Lütfen bölüm, doktor, tarih ve saat alanlarını eksiksiz doldurunuz.',
+                    icon: 'info',
+                    confirmButtonColor: '#13b6ec'
+                });
+                return;
+            }
+
+            // Her şey tamamsa formu gönder
+            $("#appointmentForm").submit();
+        });
 
     });
-
 </script>

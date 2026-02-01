@@ -1,0 +1,99 @@
+@model Medinova.Models.User
+@{
+    ViewBag.Title = "Profil Ayarları";
+    Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
+}
+
+<div class="mb-8">
+    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Hesap Ayarları</h2>
+    <p class="text-slate-400 text-sm">Kişisel bilgilerinizi ve giriş şifrenizi buradan güncelleyebilirsiniz.</p>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-xl mb-6 flex items-center gap-3 animate-pulse">
+        <span class="material-symbols-outlined">check_circle</span>
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl mb-6 flex items-center gap-3">
+        <span class="material-symbols-outlined">error</span>
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center sticky top-24">
+            <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center text-[#13b6ec] mx-auto mb-4 text-4xl font-black shadow-inner">
+                @Model.FirstName.Substring(0, 1)
+            </div>
+            <h3 class="text-xl font-bold text-slate-800">@Model.FirstName @Model.LastName</h3>
+            <p class="text-slate-400 text-sm mb-6">@Model.Email</p>
+
+            <div class="bg-slate-50 rounded-xl p-4 text-left border border-slate-100">
+                <div class="flex items-center gap-3 mb-3 text-slate-600">
+                    <span class="material-symbols-outlined text-slate-400">badge</span>
+                    <span class="text-sm font-bold">@Model.UserName</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-600">
+                    <span class="material-symbols-outlined text-slate-400">verified_user</span>
+                    <span class="text-sm font-bold text-green-600">Hasta Hesabı</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-8 border-b border-slate-50">
+                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#13b6ec]">manage_accounts</span>
+                    Bilgileri Düzenle
+                </h4>
+            </div>
+
+            <form method="post" action="/Patient/Profile/Edit" class="p-8 space-y-6">
+                @Html.HiddenFor(x => x.UserId)
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Ad</label>
+                        @Html.TextBoxFor(x => x.FirstName, new { @class = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" })
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Soyad</label>
+                        @Html.TextBoxFor(x => x.LastName, new { @class = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" })
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">E-Posta Adresi</label>
+                    @Html.TextBoxFor(x => x.Email, new { @type = "email", @class = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" })
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Kullanıcı Adı</label>
+                        @Html.TextBoxFor(x => x.UserName, new { @class = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" })
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Şifre</label>
+                        @Html.TextBoxFor(x => x.Password, new { @type = "text", @class = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" })
+                        <p class="text-[10px] text-slate-400 mt-1">* Şifrenizi değiştirmek istemiyorsanız mevcut şifrenizi koruyun.</p>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-50 flex justify-end gap-4">
+                    <a href="/Patient/Profile/Index" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-slate-50 transition-all">Vazgeç</a>
+                    <button type="submit" class="px-8 py-3 rounded-xl bg-[#13b6ec] text-white font-bold text-sm shadow-lg shadow-cyan-500/30 hover:bg-[#0fa4d6] hover:-translate-y-1 transition-all">
+                        Değişiklikleri Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

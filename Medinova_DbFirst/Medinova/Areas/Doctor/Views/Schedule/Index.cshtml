@@ -1,0 +1,74 @@
+@model List<Medinova.DTOs.DoctorDtos.DailyScheduleDto>
+
+@{
+    ViewBag.Title = "Günlük Program";
+    Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
+    DateTime selectedDate = (DateTime)ViewBag.SelectedDate;
+}
+
+<div class="space-y-6">
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-purple-600">calendar_month</span>
+                Günlük Akış
+            </h2>
+            <p class="text-sm text-slate-400">Belirtilen tarihteki doluluk durumunuz.</p>
+        </div>
+
+        <form action="/Doctor/Schedule/Index" method="get" class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+            <input type="date" name="date"
+                   value="@selectedDate.ToString("yyyy-MM-dd")"
+                   class="bg-transparent border-none text-slate-700 font-bold text-sm focus:ring-0 cursor-pointer outline-none"
+                   onchange="this.form.submit()" />
+            <span class="material-symbols-outlined text-slate-400 pointer-events-none">arrow_drop_down</span>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+
+        @foreach (var item in Model)
+        {
+            if (item.IsFull)
+            {
+                <div class="relative group bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-red-500"></div>
+
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-lg font-black text-slate-800">@item.Time</span>
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-50 text-red-600">
+                            <span class="material-symbols-outlined text-[16px]">person</span>
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hasta</p>
+                        <p class="text-sm font-bold text-slate-700 truncate" title="@item.PatientName">@item.PatientName</p>
+                    </div>
+
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })" class="text-[10px] font-bold text-blue-500 hover:text-blue-700 flex items-center gap-1">
+                        Detaya Git <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="relative group bg-slate-50 border border-slate-100 rounded-2xl p-4 transition-all hover:bg-green-50 hover:border-green-200">
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-slate-300 group-hover:bg-green-500 transition-colors"></div>
+
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-lg font-bold text-slate-400 group-hover:text-green-700 transition-colors">@item.Time</span>
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-slate-200 text-slate-400 group-hover:bg-green-100 group-hover:text-green-600 transition-colors">
+                            <span class="material-symbols-outlined text-[16px]">check</span>
+                        </span>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-sm font-medium text-slate-400 group-hover:text-green-600 transition-colors">Müsait</p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

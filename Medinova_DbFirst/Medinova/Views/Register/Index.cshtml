@@ -1,0 +1,101 @@
+@model Medinova.DTOs.RegisterDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kayıt Ol - Medinova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center relative overflow-hidden py-10">
+
+    <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-[#13b6ec]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg relative z-10">
+
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Hoş Geldiniz</h2>
+            <p class="text-slate-400 font-medium mt-2">Randevu almak için hemen hesap oluşturun.</p>
+        </div>
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="flex items-center gap-3 bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-bold mb-6">
+                <span class="material-symbols-outlined">error</span>
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-medium mb-6">
+                <p class="font-bold mb-1">Lütfen aşağıdaki hataları düzeltin:</p>
+                @Html.ValidationSummary(false, "", new { @class = "list-disc list-inside" })
+            </div>
+        }
+
+        <form method="post" action="/Register/Index">
+
+            <div class="space-y-4">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Ad</label>
+                        <input type="text" name="FirstName" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="Adınız" required />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Soyad</label>
+                        <input type="text" name="LastName" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="Soyadınız" required />
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Kullanıcı Adı</label>
+                    <div class="relative group">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">person</span>
+                        <input type="text" name="Username" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="kullanıcıadı" required />
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">E-Posta Adresi</label>
+                    <div class="relative group">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">mail</span>
+                        <input type="email" name="Email" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="örnek@mail.com" required />
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Şifre</label>
+                    <div class="relative group">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">lock</span>
+                        <input type="password" name="Password" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="••••••••" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#13b6ec] hover:bg-[#0fa4d6] text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2 mt-2">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Hesap Oluştur</span>
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-8 text-center border-t border-slate-50 pt-6">
+            <p class="text-sm text-slate-500">Zaten hesabınız var mı? <a href="/Login/Index" class="text-[#13b6ec] font-bold hover:underline">Giriş Yap</a></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -44,6 +44,44 @@
                         </div>
                     </div>
                     <a href="#contact" class="nav-item nav-link">İletişim</a>
+                    @if (Session["UserId"] == null)
+                    {
+                        <a href="/Login/Index" class="btn btn-primary my-auto" style="margin-left: 15px; border-radius: 30px; padding: 8px 25px; font-weight: bold;">
+                            Giriş Yap / Kayıt Ol
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="nav-item dropdown my-auto" style="margin-left: 15px;">
+
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #13b6ec; font-weight: bold;">
+                                <i class="fa fa-user-circle" style="margin-right: 5px;"></i>
+                                @Session["UserInfo"]
+                            </a>
+
+                            <div class="dropdown-menu border-0 shadow-lg" aria-labelledby="userDropdown">
+
+                                @if (Session["UserRole"]?.ToString() == "Patient")
+                                {
+                                    <a class="dropdown-item py-2" href="/Patient/Profile/Index">
+                                        <i class="fa fa-calendar-check text-primary me-2"></i> Randevularım
+                                    </a>
+                                }
+                                else if (Session["UserRole"]?.ToString() == "Admin" || Session["UserRole"]?.ToString() == "Doctor")
+                                {
+                                    <a class="dropdown-item py-2" href="@(Session["UserRole"]?.ToString() == "Admin" ? "/Admin/Dashboard/Index" : "/Doctor/Dashboard/Index")">
+                                        <i class="fa fa-tachometer-alt text-primary me-2"></i> Yönetim Paneli
+                                    </a>
+                                }
+
+                                <div class="dropdown-divider"></div>
+
+                                <a class="dropdown-item py-2 text-danger" href="/Login/Logout">
+                                    <i class="fa fa-sign-out-alt me-2"></i> Güvenli Çıkış
+                                </a>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

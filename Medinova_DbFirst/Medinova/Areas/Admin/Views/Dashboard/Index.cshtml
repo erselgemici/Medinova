@@ -1,306 +1,416 @@
-@using Medinova.Models
-@model List<Appointment>
-
+@model Medinova.DTOs.AdminDashboardDto
 @{
-    ViewBag.Title = "Dashboard";
+    ViewBag.Title = "Yönetim Paneli Genel Bakış";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
-    <div>
-        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Genel Bakış</h2>
-        <p class="text-slate-500 text-sm font-medium mt-1">Hoşgeldiniz, Medinova bugünkü durum özeti.</p>
-    </div>
-    <div class="flex gap-3">
-        <button class="bg-white border border-slate-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
-            <span class="material-symbols-outlined text-[20px]">download</span>
-            Rapor İndir
-        </button>
-        <a href="@Url.Action("Index", "AdminAppointment")" class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50">
-            <span class="material-symbols-outlined text-[20px]">add</span>
-            Randevulara Git
-        </a>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="space-y-8 animate-fade-in-up pb-12">
 
-    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col justify-between h-32 group hover:border-primary/30 transition-all">
-        <div class="flex justify-between items-start">
-            <div class="p-2.5 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <span class="material-symbols-outlined">event_note</span>
-            </div>
-            <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+12%</span>
-        </div>
-        <div>
-            <h3 class="text-3xl font-black text-slate-800">@ViewBag.AppointmentCount</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-wide mt-1">Toplam Randevu</p>
-        </div>
-    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col justify-between h-32 group hover:border-cyan-500/30 transition-all">
-        <div class="flex justify-between items-start">
-            <div class="p-2.5 bg-cyan-50 rounded-xl text-cyan-600 group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                <span class="material-symbols-outlined">stethoscope</span>
-            </div>
-            <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-full">Aktif</span>
-        </div>
-        <div>
-            <h3 class="text-3xl font-black text-slate-800">@ViewBag.DoctorCount</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-wide mt-1">Uzman Doktor</p>
-        </div>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col justify-between h-32 group hover:border-purple-500/30 transition-all">
-        <div class="flex justify-between items-start">
-            <div class="p-2.5 bg-purple-50 rounded-xl text-purple-600 group-hover:bg-purple-500 group-hover:text-white transition-all">
-                <span class="material-symbols-outlined">ward</span>
-            </div>
-        </div>
-        <div>
-            <h3 class="text-3xl font-black text-slate-800">@ViewBag.DepartmentCount</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-wide mt-1">Poliklinik</p>
-        </div>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col justify-between h-32 group hover:border-orange-500/30 transition-all">
-        <div class="flex justify-between items-start">
-            <div class="p-2.5 bg-orange-50 rounded-xl text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                <span class="material-symbols-outlined">medical_services</span>
-            </div>
-            <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+5 Yeni</span>
-        </div>
-        <div>
-            <h3 class="text-3xl font-black text-slate-800">@ViewBag.ServiceCount</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-wide mt-1">Tıbbi Hizmet</p>
-        </div>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h3 class="text-lg font-bold text-slate-800">Hasta Ziyaret Grafiği</h3>
-                <p class="text-xs text-slate-400">Son 30 günlük randevu hareketliliği</p>
-            </div>
-            <select class="bg-slate-50 border-none text-xs font-bold text-slate-500 rounded-lg py-1 px-3 focus:ring-0">
-                <option>Son 30 Gün</option>
-                <option>Bu Yıl</option>
-            </select>
-        </div>
-
-        <div class="h-[250px] w-full relative">
-            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                <div class="border-b border-dashed border-slate-100 h-full w-full"></div>
-                <div class="border-b border-dashed border-slate-100 h-full w-full"></div>
-                <div class="border-b border-dashed border-slate-100 h-full w-full"></div>
-                <div class="border-b border-dashed border-slate-100 h-full w-full"></div>
-            </div>
-
-            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800">Hasta Ziyaret Grafiği</h3>
-                        <p class="text-xs text-slate-400">Son 7 günlük randevu yoğunluğu</p>
-                    </div>
-                    <div class="flex items-center gap-2 px-3 py-1 bg-blue-50 text-primary rounded-lg text-xs font-bold">
-                        <span class="material-symbols-outlined text-[16px]">show_chart</span>
-                        Canlı Veri
-                    </div>
-                </div>
-
-                <div class="h-[300px] w-full relative">
-                    <canvas id="patientChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between">
-        <div>
-            <h3 class="text-lg font-bold">Hızlı İşlemler</h3>
-            <p class="text-slate-400 text-xs mb-6">Sık kullanılan menüler</p>
-
-            <div class="space-y-3">
-                <a href="@Url.Action("Create", "AdminDoctor")" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/5">
-                    <div class="h-8 w-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                        <span class="material-symbols-outlined text-sm">person_add</span>
-                    </div>
-                    <span class="text-sm font-medium">Doktor Ekle</span>
-                </a>
-
-                <a href="@Url.Action("Create", "AdminService")" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/5">
-                    <div class="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400">
-                        <span class="material-symbols-outlined text-sm">medical_services</span>
-                    </div>
-                    <span class="text-sm font-medium">Hizmet Tanımla</span>
-                </a>
-
-                <a href="@Url.Action("Index", "AdminAppointment")" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/5">
-                    <div class="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
-                        <span class="material-symbols-outlined text-sm">calendar_add_on</span>
-                    </div>
-                    <span class="text-sm font-medium">Randevular</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="mt-6 pt-6 border-t border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center font-bold">A</div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-blue-500"></div>
+            <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-bold">Admin Panel</p>
-                    <p class="text-xs text-slate-400">v1.0.0 Stable</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Hekim Kadrosu</p>
+                    <h3 class="text-4xl font-black text-gray-800 mt-2">@Model.TotalDoctors</h3>
+                    <p class="text-xs text-green-500 font-bold mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">check_circle</span> Aktif Çalışan
+                    </p>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-2xl text-blue-600 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl">stethoscope</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-indigo-500"></div>
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Toplam Randevu</p>
+                    <h3 class="text-4xl font-black text-gray-800 mt-2">@Model.TotalAppointments</h3>
+                    <p class="text-xs text-indigo-500 font-bold mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">history</span> Tüm Zamanlar
+                    </p>
+                </div>
+                <div class="p-4 bg-indigo-50 rounded-2xl text-indigo-600 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl">folder_shared</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-green-500"></div>
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Aktif / Bekleyen</p>
+                    <h3 class="text-4xl font-black text-gray-800 mt-2">@Model.TotalActiveAppointments</h3>
+                    <p class="text-xs text-green-500 font-bold mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">schedule</span> Gelecek Randevular
+                    </p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-2xl text-green-600 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl">calendar_month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-orange-500"></div>
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Kayıtlı Hasta</p>
+                    <h3 class="text-4xl font-black text-gray-800 mt-2">@Model.TotalRegisteredPatients</h3>
+                    <p class="text-xs text-orange-500 font-bold mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">person_add</span> Sisteme Kayıtlı
+                    </p>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-2xl text-orange-600 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl">groups</span>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-800">Son Randevu Talepleri</h3>
-        <a href="@Url.Action("Index", "AdminAppointment")" class="text-xs font-bold text-primary hover:underline">Tümünü Gör</a>
+    <div class="rounded-3xl shadow-lg border border-blue-100 relative overflow-hidden mb-8" style="background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);">
+
+        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+            <span class="material-symbols-outlined text-[150px] text-blue-500">psychology</span>
+        </div>
+
+        <div class="p-8 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h3 class="text-2xl font-black text-gray-800 flex items-center gap-3">
+                        <div class="p-2 bg-blue-500 text-white rounded-lg shadow-md">
+                            <span class="material-symbols-outlined">auto_graph</span>
+                        </div>
+                        Yapay Zeka Randevu Öngörüsü
+                    </h3>
+                    <p class="text-sm font-medium text-blue-600 mt-2 ml-1">ML.NET (SSA Algoritması) ile gelecek 90 gün analizi.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-4 mt-6 md:mt-0">
+                    <div class="flex items-center gap-3 px-5 py-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg"><span class="material-symbols-outlined">functions</span></div>
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase">Beklenen Toplam</span>
+                            <span class="text-xl font-black text-gray-800">@ViewBag.TotalPredicted</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 px-5 py-3 bg-white rounded-xl shadow-sm border border-purple-50">
+                        <div class="p-2 bg-purple-100 text-purple-600 rounded-lg"><span class="material-symbols-outlined">event_available</span></div>
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase">En Yoğun Gün</span>
+                            <span class="text-xl font-black text-gray-800">@ViewBag.MaxDayCount <small class="text-xs text-gray-500">Randevu</small></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 px-5 py-3 bg-white rounded-xl shadow-sm border border-green-50">
+                        <div class="p-2 bg-green-100 text-green-600 rounded-lg"><span class="material-symbols-outlined">trending_up</span></div>
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase">Genel Trend</span>
+                            <span class="text-sm font-black text-green-600">@ViewBag.Trend</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (ViewBag.MLError != null)
+            {
+                <div class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md shadow-sm mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                        <strong>Model Hatası:</strong> @ViewBag.MLError
+                    </div>
+                </div>
+            }
+
+            <div class="relative w-full h-96 bg-white rounded-2xl p-4 shadow-inner border border-gray-50">
+                <canvas id="forecastChart"></canvas>
+            </div>
+
+            <p class="text-[11px] text-center text-gray-400 mt-4 flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">info</span>
+                Bu veriler %95 güven aralığıyla hesaplanmıştır. Resmi tatiller ve mevsimsel etkiler dahil edilmiştir.
+            </p>
+        </div>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50/50 border-b border-slate-100">
-                    <th class="px-6 py-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Hasta Adı</th>
-                    <th class="px-6 py-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Doktor / Bölüm</th>
-                    <th class="px-6 py-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Tarih</th>
-                    <th class="px-6 py-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Durum</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50">
-                @if (Model != null && Model.Any())
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <div class="h-8 w-1 bg-indigo-500 rounded-full"></div>
+                    Geçmiş 6 Ay Performansı
+                </h3>
+                <button class="text-gray-400 hover:text-indigo-500"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+            <div class="h-80 w-full">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <div class="h-8 w-1 bg-purple-500 rounded-full"></div>
+                    Bölüm Dağılımı
+                </h3>
+                <button class="text-gray-400 hover:text-purple-500"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+            <div class="flex-1 flex items-center justify-center relative">
+                <div class="h-64 w-full">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <div class="h-8 w-1 bg-teal-500 rounded-full"></div>
+                    Doktor Performans Liderleri
+                </h3>
+                <button class="text-gray-400 hover:text-teal-500"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+            <div class="h-72 w-full">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <div class="h-8 w-1 bg-orange-500 rounded-full"></div>
+                    Son Randevu Akışı
+                </h3>
+                <a href="/Admin/AdminAppointment/Index" class="text-xs font-bold text-blue-500 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors">Tümünü Gör</a>
+            </div>
+
+            <div class="space-y-4 overflow-y-auto max-h-72 pr-2 scrollbar-thin scrollbar-thumb-gray-200">
+                @if (Model.LastAppointments.Any())
                 {
-                    foreach (var item in Model)
+                    foreach (var item in Model.LastAppointments)
                     {
-                        <tr class="group hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-slate-700">@item.FullName</span> <span class="text-xs text-slate-400">@item.PhoneNumber</span>
+                        <div class="group flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-200 cursor-default">
+                            <div class="h-12 w-12 rounded-xl bg-white border-2 border-gray-100 flex items-center justify-center text-blue-600 font-black text-lg shadow-sm group-hover:border-blue-200 transition-colors">
+                                @item.FullName.Substring(0, 1).ToUpper()
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-bold text-gray-800 truncate">@item.FullName</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="material-symbols-outlined text-[14px] text-gray-400">local_hospital</span>
+                                    <p class="text-xs text-gray-500 truncate">Dr. @item.Doctor.FullName</p>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-sm font-medium text-slate-600">
-                                    @(item.Doctor != null ? item.Doctor.FullName : "-")
+
+                            </div>
+                            <div class="text-right whitespace-nowrap pl-4 border-l border-gray-200">
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-lg">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span> @item.AppointmentTime
                                 </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                                    @(item.AppointmentDate.HasValue ? item.AppointmentDate.Value.ToString("dd.MM.yyyy") : "-") @item.AppointmentTime
+                                <span class="block text-[11px] font-medium text-gray-400 mt-2 text-center">
+                                    @(((DateTime)item.AppointmentDate).ToString("dd MMM dddd", new System.Globalization.CultureInfo("tr-TR")))
                                 </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                @if (item.IsActive == true)
-                                {
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-wide">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Onaylı
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 text-orange-500 text-[10px] font-bold uppercase tracking-wide">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Bekliyor
-                                    </span>
-                                }
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     }
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-sm">Henüz randevu bulunmuyor.</td>
-                    </tr>
+                    <div class="text-center py-12 flex flex-col items-center justify-center">
+                        <div class="p-4 bg-gray-100 rounded-full text-gray-300 mb-3">
+                            <span class="material-symbols-outlined text-5xl">event_busy</span>
+                        </div>
+                        <p class="text-gray-500 font-medium">Henüz kayıtlı randevu yok.</p>
+                        <p class="text-gray-400 text-sm">Yeni randevular burada görünecek.</p>
+                    </div>
                 }
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var ctx = document.getElementById('patientChart').getContext('2d');
+    // --- PREMIUM RENK PALETİ (Daha yumuşak ve modern tonlar) ---
+    const colors = {
+        blue: { fill: 'rgba(59, 130, 246, 0.15)', border: '#3b82f6', hover: '#2563eb' },
+        indigo: { fill: 'rgba(99, 102, 241, 0.15)', border: '#6366f1', hover: '#4f46e5' },
+        purple: { fill: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', hover: '#9333ea' },
+        teal: { fill: 'rgba(20, 184, 166, 0.15)', border: '#14b8a6', hover: '#0d9488' },
+        orange: { fill: 'rgba(249, 115, 22, 0.15)', border: '#f97316', hover: '#ea580c' },
+        aiGradientStart: 'rgba(59, 130, 246, 0.4)',
+        aiGradientEnd: 'rgba(255, 255, 255, 0.0)',
+        textMuted: '#9ca3af',
+        textDark: '#374151'
+    };
 
-        // Medinova Mavisi Gradient Oluşturma
-        var gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(19, 182, 236, 0.3)'); // #13b6ec (Opak)
-        gradient.addColorStop(1, 'rgba(19, 182, 236, 0.0)'); // Şeffaf
+    // Ortak Chart Ayarları (Fontlar vb.)
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = colors.textMuted;
+    Chart.defaults.scale.grid.borderColor = 'transparent';
 
-        // C#'dan gelen verileri JS dizisine çeviriyoruz
-        var dates = @Html.Raw(Json.Encode(ViewBag.ChartDates));
-        var counts = @Html.Raw(Json.Encode(ViewBag.ChartCounts));
+    // 1. AI TAHMİN GRAFİĞİ (ML.NET) - GELİŞMİŞ
+    // --------------------------------------------------
+    const mlDates = @Html.Raw(Json.Encode(ViewBag.ForecastDates));
+    const mlCounts = @Html.Raw(Json.Encode(ViewBag.ForecastCounts));
 
-        new Chart(ctx, {
+    if(mlDates && mlDates.length > 0) {
+        var ctxAI = document.getElementById('forecastChart').getContext('2d');
+        var aiGradient = ctxAI.createLinearGradient(0, 0, 0, 400);
+        aiGradient.addColorStop(0, colors.aiGradientStart);
+        aiGradient.addColorStop(1, colors.aiGradientEnd);
+
+        new Chart(ctxAI, {
             type: 'line',
             data: {
-                labels: dates, // Tarihler (X Ekseni)
+                labels: mlDates,
                 datasets: [{
-                    label: 'Randevu Sayısı',
-                    data: counts, // Sayılar (Y Ekseni)
-                    borderColor: '#13b6ec', // Çizgi Rengi
-                    backgroundColor: gradient, // Alt Dolgu Rengi
+                    label: 'Tahmini Hasta',
+                    data: mlCounts,
+                    backgroundColor: aiGradient,
+                    borderColor: colors.blue.border,
                     borderWidth: 3,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#13b6ec',
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: colors.blue.border,
                     pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true, // Altını doldur
-                    tension: 0.4 // Eğrisel çizgi (0 yaparsan düz çizgi olur)
+                    pointRadius: 0, // Normalde gizle
+                    pointHoverRadius: 8, // Üzerine gelince büyüt
+                    fill: true,
+                    tension: 0.45 // Daha yumuşak kıvrımlar
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
                 plugins: {
-                    legend: {
-                        display: false // Üstteki etiketi gizle (Sade görünüm)
-                    },
+                    legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#1e293b',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: colors.textDark,
+                        bodyColor: colors.blue.border,
+                        borderColor: 'rgba(0,0,0,0.05)',
+                        borderWidth: 1,
                         padding: 12,
-                        titleFont: { size: 13 },
-                        bodyFont: { size: 14, weight: 'bold' },
                         displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                return context.parsed.y + ' Hasta';
+                                return context.parsed.y + ' Hasta Bekleniyor';
+                            },
+                            title: function(context) {
+                                return context[0].label;
                             }
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        grid: {
-                            display: false, // Dikey çizgileri gizle
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        }
-                    },
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: '#f1f5f9', // Yatay çizgiler çok silik
-                            borderDash: [5, 5] // Kesikli çizgi
-                        },
-                        ticks: {
-                            stepSize: 1, // Tam sayı göster (0.5 hasta olmaz)
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        },
-                        border: {
-                            display: false // Sol kenar çizgisini gizle
-                        }
+                        grid: { borderDash: [3, 3], color: '#f0f0f0' },
+                        ticks: { stepSize: 1, font: { weight: '500' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 10, font: { weight: '500' } }
                     }
                 }
             }
         });
+    }
+
+    // 2. GEÇMİŞ 6 AY GRAFİĞİ (Line)
+    // --------------------------------------------------
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Encode(Model.Last6Months)),
+            datasets: [{
+                label: 'Randevu Sayısı',
+                data: @Html.Raw(Json.Encode(Model.MonthlyAppointmentCounts)),
+                borderColor: colors.indigo.border,
+                backgroundColor: colors.indigo.fill,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: colors.indigo.border,
+                pointBorderWidth: 2,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [3, 3], color: '#f0f0f0' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. BÖLÜM DAĞILIMI GRAFİĞİ (Doughnut - Modern)
+    // --------------------------------------------------
+    new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: @Html.Raw(Json.Encode(Model.DepartmentNames)),
+            datasets: [{
+                data: @Html.Raw(Json.Encode(Model.DepartmentPercentages)),
+                backgroundColor: [colors.indigo.border, colors.blue.border, colors.teal.border, colors.orange.border, colors.purple.border],
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '80%', // Çok ince modern halka
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 20, font: { size: 12, weight: '500' } }
+                }
+            },
+            layout: { padding: 10 }
+        }
+    });
+
+    // 4. DOKTOR PERFORMANS GRAFİĞİ (Bar - Rounded)
+    // --------------------------------------------------
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Encode(Model.DoctorNames)),
+            datasets: [{
+                label: 'Randevular',
+                data: @Html.Raw(Json.Encode(Model.AppointmentCounts)),
+                backgroundColor: [colors.teal.border, colors.blue.border, colors.indigo.border, colors.orange.border, colors.purple.border],
+                borderRadius: 12, // Yuvarlatılmış çubuklar
+                barThickness: 35,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f0f0f0', borderDash: [3, 3] } },
+                x: { grid: { display: false } }
+            }
+        }
     });
 </script>

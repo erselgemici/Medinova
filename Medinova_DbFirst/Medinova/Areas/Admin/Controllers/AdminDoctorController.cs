@@ -41,7 +41,7 @@ namespace Medinova.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Create() 
+        public async Task<ActionResult> Create()
         {
             await LoadDepartmentsDropdownAsync();
             return View();
@@ -52,11 +52,12 @@ namespace Medinova.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await LoadDepartmentsDropdownAsync(); 
+                await LoadDepartmentsDropdownAsync();
                 return View(doctorDto);
             }
 
-            Doctor doctor = new Doctor();
+            Medinova.Models.Doctor doctor = new Medinova.Models.Doctor();
+
             doctor.FullName = doctorDto.FullName;
             doctor.DepartmentId = doctorDto.DepartmentId;
             doctor.ImageUrl = doctorDto.ImageUrl;
@@ -74,7 +75,7 @@ namespace Medinova.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Update(int id) 
+        public async Task<ActionResult> Update(int id)
         {
             var value = await repo.GetByIdAsync(id);
 
@@ -106,14 +107,21 @@ namespace Medinova.Areas.Admin.Controllers
                 return View(doctorDto);
             }
 
-            Doctor doctor = new Doctor();
-            doctor.DoctorId = doctorDto.DoctorId;
-            doctor.FullName = doctorDto.FullName;
-            doctor.Description = doctorDto.Description;
-            doctor.DepartmentId = doctorDto.DepartmentId;
-            doctor.ImageUrl = doctorDto.ImageUrl;
+            var existingDoctor = await repo.GetByIdAsync(doctorDto.DoctorId);
 
-            await repo.UpdateAsync(doctor);
+            if (existingDoctor != null)
+            {
+                existingDoctor.FullName = doctorDto.FullName;
+                existingDoctor.Description = doctorDto.Description;
+                existingDoctor.ImageUrl = doctorDto.ImageUrl;
+
+                if (doctorDto.DepartmentId > 0)
+                {
+                    existingDoctor.DepartmentId = doctorDto.DepartmentId;
+                }
+
+                await repo.UpdateAsync(existingDoctor);
+            }
 
             return RedirectToAction("Index");
         }

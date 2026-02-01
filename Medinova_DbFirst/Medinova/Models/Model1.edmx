@@ -127,6 +127,7 @@
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
           <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="DoctorId" Type="int" />
         </EntityType>
         <EntityType Name="WebSiteSettings">
           <Key>
@@ -371,6 +372,7 @@
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Roles" Relationship="MedinovaDbModel.UserRoles" FromRole="User" ToRole="Role" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DoctorId" Type="Int32" />
         </EntityType>
         <EntityType Name="Hero">
           <Key>
@@ -512,6 +514,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="MedinovaDbModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="DoctorId" ColumnName="DoctorId" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />

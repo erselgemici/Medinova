@@ -6,10 +6,18 @@ namespace Medinova.Areas.Admin.Controllers
     {
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            // Session kontrolü: Kullanıcı giriş yapmamışsa (AdminId boşsa)
-            if (Session["AdminId"] == null)
+            if (Session["UserId"] == null)
             {
-                filterContext.Result = new RedirectResult("/Admin/Login/Index");
+                filterContext.Result = new RedirectResult("/Login/Index");
+                return;
+            }
+
+            var role = Session["UserRole"]?.ToString();
+
+            if (role != "Admin")
+            {
+                filterContext.Result = new RedirectResult("/Login/Index");
+                return;
             }
 
             base.OnActionExecuting(filterContext);

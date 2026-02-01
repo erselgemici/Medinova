@@ -1,0 +1,88 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap - Medinova</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen flex items-center justify-center relative overflow-hidden">
+
+    <div class="absolute -top-20 -left-20 w-96 h-96 bg-[#13b6ec]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="bg-white p-10 rounded-[2rem] shadow-2xl border border-slate-100 w-full max-w-sm relative z-10 mx-4">
+
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#13b6ec] to-cyan-400 text-white mb-4 shadow-lg shadow-cyan-500/30">
+                <span class="material-symbols-outlined text-3xl">local_hospital</span>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Medinova</h2>
+            <p class="text-slate-400 text-sm font-medium">Hastane Yönetim Paneli</p>
+        </div>
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="flex items-center gap-2 bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-xs font-bold mb-6 animate-pulse">
+                <span class="material-symbols-outlined text-sm">error</span>
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        <form method="post" action="/Login/Index" class="space-y-5">
+
+            <div>
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Kullanıcı Adı</label>
+                <div class="relative group">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#13b6ec] transition-colors material-symbols-outlined text-[20px]">person</span>
+                    <input type="text" name="Username" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="Kullanıcı adınız" required />
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Şifre</label>
+                <div class="relative group">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#13b6ec] transition-colors material-symbols-outlined text-[20px]">lock</span>
+                    <input type="password" name="Password" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#13b6ec]/20 focus:border-[#13b6ec] outline-none transition-all" placeholder="••••••••" required />
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#13b6ec] hover:bg-[#0fa4d6] text-white font-bold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 mt-4">
+                <span>Giriş Yap</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+
+        </form>
+
+        <div class="mt-8 text-center pt-6 border-t border-slate-50">
+            <p class="text-xs text-slate-500 font-medium">
+                Henüz hesabınız yok mu? <br />
+                <a href="/Register/Index" class="text-[#13b6ec] font-bold hover:text-cyan-700 hover:underline transition-colors text-sm mt-1 inline-block">
+                    Hemen Kayıt Olun
+                </a>
+            </p>
+        </div>
+
+        <div class="mt-6 text-center">
+            <p class="text-[10px] text-slate-300">
+                © @DateTime.Now.Year Medinova Health Group.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

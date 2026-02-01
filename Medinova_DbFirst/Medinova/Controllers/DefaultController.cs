@@ -52,6 +52,31 @@ namespace Medinova.Controllers
         [HttpPost]
         public ActionResult MakeAppointment(Appointment appointment)
         {
+            // Kullanıcı giriş yapmış mı?
+            if (Session["UserId"] == null)
+            {
+                return RedirectToAction("Index", "Login", new { area = "" });
+            }
+
+            // O doktora, o tarihte ve saatte AKTİF bir randevu var mı?
+            bool isBooked = _context.Appointments.Any(x =>
+                x.DoctorId == appointment.DoctorId &&
+                x.AppointmentDate == appointment.AppointmentDate &&
+                x.AppointmentTime == appointment.AppointmentTime &&
+                x.IsActive == true);
+            if (isBooked)
+            {
+                // Hata mesajı ile geri dön
+                TempData["Error"] = "Seçilen saatte randevu doludur, lütfen başka bir saat seçiniz.";
+                return RedirectToAction("Index");
+            }
+
+            int userId = (int)Session["UserId"];
+            var currentUser = _context.Users.Find(userId);
+
+            appointment.FullName = currentUser.FirstName + " " + currentUser.LastName;
+            appointment.Email = currentUser.Email;
+
             appointment.IsActive = true;
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
@@ -96,7 +121,104 @@ namespace Medinova.Controllers
 
             return Json(dtoList, JsonRequestBehavior.AllowGet);
         }
-        
+
+
+        [HttpPost]
+        public JsonResult GetDepartmentRecommendation(string complaint)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(complaint))
+                {
+                    return Json(new { success = false, message = "Lütfen şikayetinizi yazınız." });
+                }
+
+                complaint = complaint.ToLower(new System.Globalization.CultureInfo("tr-TR"));
+
+                var departments = _context.Departments.ToList();
+
+                var keywords = new Dictionary<string, List<string>>
+        {
+            { "Kardiyoloji", new List<string> { "kalp", "çarpıntı", "göğüs ağrısı", "tansiyon", "damar", "nefes darlığı" } },
+            { "Dahiliye", new List<string> { "mide", "karın", "halsizlik", "grip", "ateş", "şeker", "diyabet", "bulantı", "kusma" } },
+            { "Göz Hastalıkları", new List<string> { "göz", "bulanık", "görme", "arıpacık", "miyop" } },
+            { "Ortopedi", new List<string> { "kırık", "çıkık", "eklem", "diz", "bel", "boyun", "ağrı", "kemik" } },
+            
+            { "Pediatri", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale", "oğlum", "kızım" } },
+            
+            { "Çocuk Sağlığı", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale" } },
+
+            { "Dermatoloji", new List<string> { "cilt", "deri", "kaşıntı", "sivilce", "akne", "egzama" } },
+            { "Kulak Burun Boğaz", new List<string> { "kulak", "burun", "boğaz", "duyma", "bademcik", "sinüzit" } },
+            { "Nöroloji", new List<string> { "baş ağrısı", "migren", "unutkanlık", "titreme", "felç" } },
+            { "Psikiyatri", new List<string> { "depresyon", "stres", "uykusuzluk", "panik", "anksiyete" } },
+            { "Genel Cerrahi", new List<string> { "apandisit", "fıtık", "safra", "meme", "hemoroid" } }
+        };
+
+                int bestMatchId = 0;
+                int maxScore = 0;
+                string recommendedDeptName = "";
+
+                // EŞLEŞTİRME ALGORİTMASI
+                foreach (var dept in departments)
+                {
+                    int score = 0;
+
+                    if (keywords.ContainsKey(dept.Name))
+                    {
+                        foreach (var key in keywords[dept.Name])
+                        {
+                            if (complaint.Contains(key))
+                            {
+                                score += 2;
+                            }
+                        }
+                    }
+
+                    // İsim Kontrolü (Bölüm adı şikayette geçiyor mu?)
+                    if (complaint.Contains(dept.Name.ToLower(new System.Globalization.CultureInfo("tr-TR"))))
+                    {
+                        score += 10;
+                    }
+
+                    if (score > maxScore)
+                    {
+                        maxScore = score;
+                        bestMatchId = dept.DepartmentId;
+                        recommendedDeptName = dept.Name;
+                    }
+                }
+
+                // SONUÇ DÖNDÜRME
+                if (bestMatchId > 0)
+                {
+                    return Json(new { success = true, departmentId = bestMatchId, departmentName = recommendedDeptName });
+                }
+                else
+                {
+                    // Eşleşme yoksa Dahiliye'ye yönlendir (Fallback)
+                    var defaultDept = departments.FirstOrDefault(x => x.Name == "Dahiliye" || x.Name == "İç Hastalıkları");
+                    if (defaultDept != null)
+                    {
+                        return Json(new { success = true, departmentId = defaultDept.DepartmentId, departmentName = defaultDept.Name + " (Genel Kontrol)" });
+                    }
+
+                    return Json(new { success = false, message = "Şikayetinize uygun bölüm bulunamadı." });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Beklenmedik bir hata olursa 500 hatası vermek yerine bu mesajı göster
+                return Json(new { success = false, message = "Hata oluştu: " + ex.Message });
+            }
+        }
+
+
+
+
+
+
+
         public PartialViewResult DefaultHero()
         {
             var values = _context.Heroes.FirstOrDefault();

@@ -1,0 +1,110 @@
+@model List<Medinova.Models.Appointment>
+@{
+    ViewBag.Title = "Randevularım";
+    Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
+    var today = DateTime.Today;
+}
+
+<div class="bg-gradient-to-r from-[#13b6ec] to-blue-600 rounded-3xl p-8 md:p-12 text-white shadow-xl shadow-cyan-500/20 relative overflow-hidden mb-10">
+    <div class="absolute right-0 top-0 h-full w-1/3 bg-white/10 skew-x-12 origin-bottom-right"></div>
+    <div class="relative z-10 max-w-2xl">
+        <h2 class="text-3xl md:text-4xl font-black tracking-tight mb-4">Randevularım</h2>
+        <p class="text-cyan-50 text-lg opacity-90">Geçmiş ve gelecek tüm doktor randevularınızı buradan takip edebilir, planlarınız değişirse aktif randevularınızı iptal edebilirsiniz.</p>
+
+        <a href="/Default/Index" class="inline-flex items-center gap-2 mt-8 px-8 py-3.5 bg-white text-[#13b6ec] rounded-xl font-bold hover:bg-cyan-50 hover:scale-105 transition-all shadow-lg cursor-pointer">
+            <span class="material-symbols-outlined">add_circle</span>
+            Yeni Randevu Oluştur
+        </a>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        @foreach (var item in Model)
+        {
+            // Durum Kontrolü
+            bool isPast = item.AppointmentDate < today; // Tarihi geçmiş mi?
+            bool isCancelled = item.IsActive == false; // İptal edilmiş mi?
+
+            // Kart Stili Belirleme
+            string cardStyle = "bg-white border-slate-100 hover:border-cyan-200 hover:shadow-lg";
+            if (isCancelled) { cardStyle = "bg-red-50/50 border-red-100 grayscale opacity-70"; }
+            else if (isPast) { cardStyle = "bg-slate-50 border-slate-200 opacity-60"; }
+
+            <div class="rounded-2xl p-6 border transition-all duration-300 relative group @cardStyle">
+
+                <div class="absolute top-4 right-4">
+                    @if (isCancelled)
+                    {
+                        <span class="bg-red-100 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">cancel</span> İptal
+                        </span>
+                    }
+                    else if (isPast)
+                    {
+                        <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Geçmiş</span>
+                    }
+                    else
+                    {
+                        <span class="bg-green-100 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Aktif
+                        </span>
+                    }
+                </div>
+
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="h-16 w-16 rounded-full bg-slate-100 overflow-hidden border-2 border-white shadow-md">
+                        <img src="@(item.Doctor != null ? item.Doctor.ImageUrl : "https://via.placeholder.com/150")"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/150?text=Dr'" />
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight">@(item.Doctor != null ? item.Doctor.FullName : "Bilinmiyor")</h3>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">@(item.Doctor?.Department != null ? item.Doctor.Department.Name : "Genel Poliklinik")</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-50/80 rounded-xl p-4 mb-6 border border-slate-100">
+                    <div class="text-center">
+                        <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Tarih</p>
+                        <p class="font-bold text-slate-700 text-sm">@(((DateTime)item.AppointmentDate).ToString("dd MMM yyyy"))</p>
+                    </div>
+                    <div class="h-8 w-[1px] bg-slate-200"></div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Saat</p>
+                        <p class="font-black text-[#13b6ec] text-lg">@item.AppointmentTime</p>
+                    </div>
+                </div>
+
+                @if (!isPast && !isCancelled)
+                {
+                    <a href="@Url.Action("CancelAppointment", "Profile", new { area = "Patient", id = item.AppointmentId })"
+                       class="btn-iptal w-full py-3 rounded-xl border-2 border-red-50 text-red-500 font-bold text-sm hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">block</span>
+                        Randevuyu İptal Et
+                    </a>
+                }
+                else
+                {
+                    <button disabled class="w-full py-3 rounded-xl bg-slate-100 text-slate-400 font-bold text-sm cursor-not-allowed border border-transparent">
+                        @(isCancelled ? "İptal Edildi" : "Tamamlandı")
+                    </button>
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-3xl border border-dashed border-slate-200 p-12 text-center max-w-2xl mx-auto mt-10">
+        <div class="inline-flex h-24 w-24 bg-blue-50 rounded-full items-center justify-center text-blue-200 mb-6">
+            <span class="material-symbols-outlined text-5xl">calendar_add_on</span>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-800 mb-2">Henüz Randevunuz Yok</h3>
+        <p class="text-slate-400 mb-8 max-w-md mx-auto">Sağlığınız bizim için önemli. Uzman doktorlarımızdan size uygun olanı seçerek hemen randevu oluşturabilirsiniz.</p>
+        <a href="/Default/Index" class="inline-flex items-center gap-2 px-8 py-3 bg-[#13b6ec] text-white rounded-xl font-bold shadow-lg shadow-cyan-500/30 hover:bg-[#0fa4d6] transition-all">
+            Hemen Randevu Al
+        </a>
+    </div>
+}
