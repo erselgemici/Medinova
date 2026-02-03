@@ -1,9 +1,18 @@
 using Medinova.DTOs;
 using Medinova.Enums;
 using Medinova.Models;
+using Medinova.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Configuration;
 using System.Web.Mvc;
 
 namespace Medinova.Controllers
@@ -52,7 +61,6 @@ namespace Medinova.Controllers
         [HttpPost]
         public ActionResult MakeAppointment(Appointment appointment)
         {
-            // Kullanıcı giriş yapmış mı?
             if (Session["UserId"] == null)
             {
                 return RedirectToAction("Index", "Login", new { area = "" });
@@ -66,7 +74,7 @@ namespace Medinova.Controllers
                 x.IsActive == true);
             if (isBooked)
             {
-                // Hata mesajı ile geri dön
+                // Hata mesajı ile geri dön (Bunu da SweetAlert ile gösterebilirsin istersen)
                 TempData["Error"] = "Seçilen saatte randevu doludur, lütfen başka bir saat seçiniz.";
                 return RedirectToAction("Index");
             }
@@ -80,17 +88,76 @@ namespace Medinova.Controllers
             appointment.IsActive = true;
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
+
+
+            try
+            {
+
+                var log = new Log
+                {
+                    UserId = userId,
+                    UserRole = "Patient",
+                    LogType = "Business",
+                    Action = "Randevu Alındı",
+                    Description = $"{currentUser.FirstName} {currentUser.LastName} {DateTime.Now:dd MMMM yyyy HH:mm}'de, {appointment.AppointmentDate:dd.MM.yyyy} tarihi için randevu aldı.",
+                    IPAddress = Request.UserHostAddress,
+                    CreatedDate = DateTime.Now
+                };
+                _context.Logs.Add(log);
+                _context.SaveChanges();
+
+                var doctor = _context.Doctors.Find(appointment.DoctorId);
+                string doctorName = doctor != null ? doctor.FullName : "Belirtilmedi";
+
+                string host = WebConfigurationManager.AppSettings["SmtpHost"];
+                int port = int.Parse(WebConfigurationManager.AppSettings["SmtpPort"]);
+                string mailAddress = WebConfigurationManager.AppSettings["SmtpMail"];
+                string mailPass = WebConfigurationManager.AppSettings["SmtpPass"];
+
+                using (var client = new SmtpClient(host, port))
+                {
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(mailAddress, mailPass);
+
+                    var mail = new MailMessage();
+                    mail.From = new MailAddress(mailAddress, "Medinova Hastanesi");
+                    mail.To.Add(appointment.Email);
+                    mail.Subject = "Randevu Onayı - Medinova";
+                    mail.IsBodyHtml = true;
+                    mail.Body = $@"
+                        <div style='font-family:Arial; padding:20px; border:1px solid #eee;'>
+                            <h2 style='color:#007bff;'>Sayın {appointment.FullName},</h2>
+                            <p>Randevunuz başarıyla oluşturulmuştur.</p>
+                            <ul>
+                                <li><b>Doktor:</b> {doctorName}</li>
+                                <li><b>Tarih:</b> {appointment.AppointmentDate:dd.MM.yyyy}</li>
+                                <li><b>Saat:</b> {appointment.AppointmentTime}</li>
+                            </ul>
+                            <p>Geçmiş olsun dileklerimizle.</p>
+                        </div>";
+
+                    client.Send(mail);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Mail hatası loglanabilir
+            }
+
+            TempData["AppointmentSuccess"] = "Randevunuz başarıyla oluşturulmuştur. Detaylar e-posta adresinize gönderildi.";
+
             return RedirectToAction("Index");
         }
+
 
         public JsonResult GetDoctorsByDepartmentId(int departmentId)
         {
             var doctors = _context.Doctors.Where(x => x.DepartmentId == departmentId)
-                                .Select(doctor => new SelectListItem
-                                {
-                                    Text = doctor.FullName,
-                                    Value = doctor.DoctorId.ToString()
-                                }).ToList();
+                                    .Select(doctor => new SelectListItem
+                                    {
+                                        Text = doctor.FullName,
+                                        Value = doctor.DoctorId.ToString()
+                                    }).ToList();
 
             return Json(doctors, JsonRequestBehavior.AllowGet);
         }
@@ -138,22 +205,22 @@ namespace Medinova.Controllers
                 var departments = _context.Departments.ToList();
 
                 var keywords = new Dictionary<string, List<string>>
-        {
-            { "Kardiyoloji", new List<string> { "kalp", "çarpıntı", "göğüs ağrısı", "tansiyon", "damar", "nefes darlığı" } },
-            { "Dahiliye", new List<string> { "mide", "karın", "halsizlik", "grip", "ateş", "şeker", "diyabet", "bulantı", "kusma" } },
-            { "Göz Hastalıkları", new List<string> { "göz", "bulanık", "görme", "arıpacık", "miyop" } },
-            { "Ortopedi", new List<string> { "kırık", "çıkık", "eklem", "diz", "bel", "boyun", "ağrı", "kemik" } },
-            
-            { "Pediatri", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale", "oğlum", "kızım" } },
-            
-            { "Çocuk Sağlığı", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale" } },
+                {
+                    { "Kardiyoloji", new List<string> { "kalp", "çarpıntı", "göğüs ağrısı", "tansiyon", "damar", "nefes darlığı" } },
+                    { "Dahiliye", new List<string> { "mide", "karın", "halsizlik", "grip", "ateş", "şeker", "diyabet", "bulantı", "kusma" } },
+                    { "Göz Hastalıkları", new List<string> { "göz", "bulanık", "görme", "arıpacık", "miyop" } },
+                    { "Ortopedi", new List<string> { "kırık", "çıkık", "eklem", "diz", "bel", "boyun", "ağrı", "kemik" } },
 
-            { "Dermatoloji", new List<string> { "cilt", "deri", "kaşıntı", "sivilce", "akne", "egzama" } },
-            { "Kulak Burun Boğaz", new List<string> { "kulak", "burun", "boğaz", "duyma", "bademcik", "sinüzit" } },
-            { "Nöroloji", new List<string> { "baş ağrısı", "migren", "unutkanlık", "titreme", "felç" } },
-            { "Psikiyatri", new List<string> { "depresyon", "stres", "uykusuzluk", "panik", "anksiyete" } },
-            { "Genel Cerrahi", new List<string> { "apandisit", "fıtık", "safra", "meme", "hemoroid" } }
-        };
+                    { "Pediatri", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale", "oğlum", "kızım" } },
+
+                    { "Çocuk Sağlığı", new List<string> { "çocuk", "bebek", "aşı", "gelişim", "pişik", "havale" } },
+
+                    { "Dermatoloji", new List<string> { "cilt", "deri", "kaşıntı", "sivilce", "akne", "egzama" } },
+                    { "Kulak Burun Boğaz", new List<string> { "kulak", "burun", "boğaz", "duyma", "bademcik", "sinüzit" } },
+                    { "Nöroloji", new List<string> { "baş ağrısı", "migren", "unutkanlık", "titreme", "felç" } },
+                    { "Psikiyatri", new List<string> { "depresyon", "stres", "uykusuzluk", "panik", "anksiyete" } },
+                    { "Genel Cerrahi", new List<string> { "apandisit", "fıtık", "safra", "meme", "hemoroid" } }
+                };
 
                 int bestMatchId = 0;
                 int maxScore = 0;
@@ -175,7 +242,6 @@ namespace Medinova.Controllers
                         }
                     }
 
-                    // İsim Kontrolü (Bölüm adı şikayette geçiyor mu?)
                     if (complaint.Contains(dept.Name.ToLower(new System.Globalization.CultureInfo("tr-TR"))))
                     {
                         score += 10;
@@ -189,14 +255,12 @@ namespace Medinova.Controllers
                     }
                 }
 
-                // SONUÇ DÖNDÜRME
                 if (bestMatchId > 0)
                 {
                     return Json(new { success = true, departmentId = bestMatchId, departmentName = recommendedDeptName });
                 }
                 else
                 {
-                    // Eşleşme yoksa Dahiliye'ye yönlendir (Fallback)
                     var defaultDept = departments.FirstOrDefault(x => x.Name == "Dahiliye" || x.Name == "İç Hastalıkları");
                     if (defaultDept != null)
                     {
@@ -208,15 +272,93 @@ namespace Medinova.Controllers
             }
             catch (Exception ex)
             {
-                // Beklenmedik bir hata olursa 500 hatası vermek yerine bu mesajı göster
                 return Json(new { success = false, message = "Hata oluştu: " + ex.Message });
             }
         }
 
+        [HttpPost]
+        public async Task<JsonResult> AskGemini(string question)
+        {
+            try
+            {
+                var departments = _context.Departments.Select(x => x.Name).ToList();
+                string hospitalContext = string.Join(", ", departments);
 
+                string apiKey = WebConfigurationManager.AppSettings["GeminiApiKey"];
+                string modelName = "models/gemini-1.5-flash";
 
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        string listUrl = $"https://generativelanguage.googleapis.com/v1beta/models?key={apiKey}";
+                        var listResponse = await client.GetStringAsync(listUrl);
+                        var listJson = JObject.Parse(listResponse);
+                        var latestModel = listJson["models"]
+                            .Where(m => m["name"].ToString().Contains("gemini") &&
+                                            m["supportedGenerationMethods"].Any(x => x.ToString() == "generateContent"))
+                            .OrderByDescending(m => m["name"].ToString())
+                            .FirstOrDefault();
+                        if (latestModel != null) modelName = latestModel["name"].ToString();
+                    }
+                    catch { }
 
+                    string url = $"https://generativelanguage.googleapis.com/v1beta/{modelName}:generateContent?key={apiKey}";
 
+                    var prompt = $@"
+                Sen Medinova Sağlık Grubu'nun uzman ve yardımsever yapay zeka asistanısın.
+                
+                Hastanemizde SADECE şu tıbbi bölümler bulunmaktadır: [{hospitalContext}].
+                
+                Görevin:
+                1. Hastanın şikayetini ({question}) analiz et.
+                2. Önce hastayı rahatlatacak, evde uygulayabileceği çok kısa ve güvenli bir tıbbi tavsiye ver (Örn: 'Bol sıvı tüketin').
+                3. Ardından şikayeti için YALNIZCA yukarıdaki listede yer alan en uygun bölümü seç.
+                4. Cevabını tam olarak şu cümleyle bitir: 'Tedaviniz için hastanemizin [Bölüm Adı] bölümündeki uzman hekimlerimizden randevu oluşturabilirsiniz.'
+                
+                Not: Asla listede olmayan bir bölüm önerme. Cevabın 3-4 cümleyi geçmesin.
+            ";
+
+                    var requestBody = new
+                    {
+                        contents = new[] {
+                    new {
+                        parts = new[] {
+                            new { text = prompt }
+                        }
+                    }
+                }
+                    };
+
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, jsonContent);
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    JObject json = JObject.Parse(responseString);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string err = json["error"]?["message"]?.ToString() ?? "Hata";
+                        return Json(new { success = false, reply = $"Hata: {err}" });
+                    }
+
+                    string answer = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+
+                    // Loglama
+                    try
+                    {
+                        new LogService().CreateLog((int?)Session["UserId"], "Patient", "Audit", $"AI ({modelName})", $"Soru: {question} | Cevap: {answer}");
+                    }
+                    catch { }
+
+                    return Json(new { success = true, reply = answer });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, reply = "Sistem Hatası: " + ex.Message });
+            }
+        }
 
 
         public PartialViewResult DefaultHero()
@@ -234,7 +376,7 @@ namespace Medinova.Controllers
         public PartialViewResult DefaultAbout()
         {
             var aboutData = _context.Abouts.FirstOrDefault();
-            var items = _context.AboutItems.ToList();           
+            var items = _context.AboutItems.ToList();
             ViewBag.Items = items;
             var dto = new ResultAboutDto
             {
@@ -294,7 +436,5 @@ namespace Medinova.Controllers
         {
             return PartialView();
         }
-
-       
     }
 }

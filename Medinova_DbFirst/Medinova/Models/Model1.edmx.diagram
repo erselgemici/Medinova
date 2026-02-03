@@ -22,6 +22,7 @@
         <EntityTypeShape EntityType="MedinovaDbModel.Role" Width="1.5" PointX="10" PointY="4.125" />
         <AssociationConnector Association="MedinovaDbModel.UserRoles" />
         <EntityTypeShape EntityType="MedinovaDbModel.WebSiteSetting" Width="1.5" PointX="5.375" PointY="7.75" />
+        <EntityTypeShape EntityType="MedinovaDbModel.Log" Width="1.5" PointX="7.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

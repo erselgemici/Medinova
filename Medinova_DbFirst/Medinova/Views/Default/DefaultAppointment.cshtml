@@ -260,3 +260,35 @@
 
     });
 </script>
+
+@if (TempData["AppointmentSuccess"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Swal.fire({
+                title: 'Randevunuz Alındı! 🎉',
+                text: '@Html.Raw(TempData["AppointmentSuccess"])',
+                icon: 'success',
+                confirmButtonText: 'Tamam',
+                confirmButtonColor: '#13C5DD',
+                timer: 5000, // 5 saniye sonra otomatik kapanır
+                timerProgressBar: true
+            });
+        });
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Swal.fire({
+                title: 'Hata!',
+                text: '@Html.Raw(TempData["Error"])',
+                icon: 'error',
+                confirmButtonText: 'Tekrar Dene',
+                confirmButtonColor: '#d33'
+            });
+        });
+    </script>
+}

@@ -1,25 +1,107 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="container-fluid bg-primary my-5 py-5">
     <div class="container py-5">
-        <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-            <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Doktor Bul</h5>
-            <h1 class="display-4 mb-4">Sizin İçin En Doğru Hekimi Bulun</h1>
-            <h5 class="text-white fw-normal">Yapay zeka destekli akıllı arama asistanımız çok yakında hizmetinizde olacak.</h5>
+        <div class="text-center mx-auto mb-5" style="max-width: 600px;">
+            <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">AI Doktor Asistanı</h5>
+            <h1 class="display-4 mb-4 text-white">Şikayetinizi Söyleyin, Bölümü Bulalım</h1>
+            <h5 class="text-white-50 fw-normal">Yapay zeka teknolojisi ile saniyeler içinde doğru polikliniği öğrenin.</h5>
         </div>
 
-        <div class="mx-auto" style="width: 100%; max-width: 600px;">
-            <div class="input-group">
-                <select class="form-select border-primary w-25" style="height: 60px;">
-                    <option selected>Bölüm Seçiniz</option>
-                    <option value="1">Kardiyoloji</option>
-                    <option value="2">Nöroloji</option>
-                    <option value="3">Ortopedi</option>
-                    <option value="4">Dahiliye</option>
-                </select>
+        <div class="mx-auto" style="width: 100%; max-width: 800px;">
+            <div class="input-group shadow-lg rounded-3 overflow-hidden">
+                <input type="text" id="txtAiComplaint" class="form-control border-0 p-4" placeholder="Örn: Başım zonkluyor ve ışığa bakamıyorum..." style="height: 70px; font-size: 18px;">
+                <button class="btn btn-dark px-5" type="button" id="btnAskGemini" style="font-weight: bold; font-size: 16px;">
+                    <i class="fa fa-robot me-2"></i> ANALİZ ET
+                </button>
+            </div>
 
-                <input type="text" class="form-control border-primary w-50" placeholder="Anahtar kelime veya doktor adı...">
-
-                <button class="btn btn-dark border-0 w-25">Ara</button>
+            <div id="aiResultCard" class="mt-4 bg-white rounded-3 shadow-sm position-relative overflow-hidden" style="display:none; border-left: 6px solid #13C5DD;">
+                <div class="p-4">
+                    <h5 class="text-primary mb-3 d-flex align-items-center">
+                        <i class="fa fa-stethoscope me-2 fs-4"></i> Doktorun Tavsiyesi:
+                    </h5>
+                    <p id="aiResponseText" class="text-dark mb-0 fs-5" style="line-height: 1.8; color: #444;"></p>
+                </div>
+                <i class="fa fa-user-md position-absolute text-primary" style="opacity: 0.05; font-size: 150px; right: -20px; bottom: -20px;"></i>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#btnAskGemini").click(function () {
+            var complaint = $("#txtAiComplaint").val();
+
+            // 1. Boş Kontrolü (SweetAlert ile)
+            if (!complaint || complaint.trim() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Eksik Bilgi',
+                    text: 'Lütfen şikayetinizi kısaca yazınız.',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#13C5DD'
+                });
+                return;
+            }
+
+            // 2. Yükleniyor Ekranı
+            Swal.fire({
+                title: 'Analiz Yapılıyor...',
+                text: 'Yapay zeka semptomlarınızı inceliyor, lütfen bekleyin.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+
+            // 3. Backend İsteği
+            $.ajax({
+                type: "POST",
+                url: "/Default/AskGemini",
+                data: { question: complaint },
+                success: function (res) {
+                    Swal.close(); // Yükleniyor'u kapat
+
+                    if (res.success) {
+                        // Cevabı Temizle ve Göster
+                        var cleanReply = res.reply.replace(/\*/g, ''); // Markdown temizliği
+
+                        $("#aiResponseText").text(cleanReply);
+                        $("#aiResultCard").slideDown(); // Şık bir açılış
+
+                        // İsteğe bağlı: Başarılı popup'ı (Kullanıcıyı yormamak için kapalı tuttum, istersen açabilirsin)
+                        // Swal.fire({ icon: 'success', title: 'Analiz Tamamlandı', timer: 1500, showConfirmButton: false });
+                    } else {
+                        // Backend Hatası
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Bir Sorun Oluştu',
+                            text: res.reply,
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Bağlantı Hatası',
+                        text: 'Sunucu ile iletişim kurulamadı. Lütfen internetinizi kontrol edin.',
+                        confirmButtonText: 'Tamam'
+                    });
+                }
+            });
+        });
+
+        // Enter tuşu desteği
+        $("#txtAiComplaint").keypress(function (e) {
+            if (e.which == 13) {
+                $("#btnAskGemini").click();
+            }
+        });
+    });
+</script>

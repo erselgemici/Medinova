@@ -209,6 +209,7 @@
     <Compile Include="Areas\Admin\Controllers\AdminServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminTestimonialController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\LogController.cs" />
     <Compile Include="Areas\Doctor\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Doctor\Controllers\DoctorBaseController.cs" />
     <Compile Include="Areas\Doctor\Controllers\ProfileController.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="Areas\Patient\Controllers\PatientBaseController.cs" />
     <Compile Include="Areas\Patient\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Patient\PatientAreaRegistration.cs" />
+    <Compile Include="Controllers\AIController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -278,6 +280,9 @@
     <Compile Include="Models\Hero.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Log.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Model1.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -336,7 +341,10 @@
     <Compile Include="Repositories\TestimonialRepositories\ITestimonialRepository.cs" />
     <Compile Include="Repositories\TestimonialRepositories\TestimonialRepository.cs" />
     <Compile Include="Repositories\UserRepositories\UserRepository.cs" />
+    <Compile Include="Services\GeminiService.cs" />
     <Compile Include="Services\AppointmentForecaster.cs" />
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\LogService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin-login.css" />
@@ -420,6 +428,7 @@
     <Content Include="Areas\Patient\Views\Shared\_PatientLayout.cshtml" />
     <Content Include="Areas\Patient\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Patient\Views\Profile\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Log\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -607,6 +616,7 @@
     <Folder Include="Areas\Doctor\Views\DoctorBase\" />
     <Folder Include="Areas\Patient\Data\" />
     <Folder Include="Areas\Patient\Views\PatientBase\" />
+    <Folder Include="Views\AI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

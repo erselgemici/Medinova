@@ -60,6 +60,19 @@
           <Property Name="Title" Type="nvarchar" MaxLength="100" />
           <Property Name="Description" Type="nvarchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="Logs">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="UserRole" Type="nvarchar" MaxLength="50" />
+          <Property Name="LogType" Type="nvarchar" MaxLength="50" />
+          <Property Name="Action" Type="nvarchar" MaxLength="200" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="IPAddress" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="Packages">
           <Key>
             <PropertyRef Name="PackageID" />
@@ -204,6 +217,7 @@
           <EntitySet Name="Departments" EntityType="Self.Departments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Doctors" EntityType="Self.Doctors" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Heroes" EntityType="Self.Heroes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Logs" EntityType="Self.Logs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Packages" EntityType="Self.Packages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Services" EntityType="Self.Services" Schema="dbo" store:Type="Tables" />
@@ -314,6 +328,7 @@
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
           <EntitySet Name="WebSiteSettings" EntityType="MedinovaDbModel.WebSiteSetting" />
+          <EntitySet Name="Logs" EntityType="MedinovaDbModel.Log" />
         </EntityContainer>
         <EntityType Name="sysdiagram">
           <Key>
@@ -441,6 +456,19 @@
           <Property Name="FacebookUrl" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="InstagramUrl" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="LinkedinUrl" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="UserRole" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LogType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IPAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -598,6 +626,20 @@
                 <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="LogoUrl" ColumnName="LogoUrl" />
                 <ScalarProperty Name="SettingID" ColumnName="SettingID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="MedinovaDbModel.Log">
+              <MappingFragment StoreEntitySet="Logs">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IPAddress" ColumnName="IPAddress" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="LogType" ColumnName="LogType" />
+                <ScalarProperty Name="UserRole" ColumnName="UserRole" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
